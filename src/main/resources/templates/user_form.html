@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ユーザー管理</title>
+    <!-- Bootstrap 4 CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome（最新バージョン） -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- jQuery（最新バージョン、AJAX用） -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- カスタムCSS -->
+    <style>
+        .alert ul {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 th:text="${!@checkUtils.isNotBlank(userForm.userId) ? 'ユーザー登録' : 'ユーザー更新'}"></h2>
+        
+        <!-- 成功メッセージ -->
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+
+        <!-- フォーム -->
+        <form th:action="${actionUrl}" th:object="${userForm}" method="post">
+            <!-- フォーム全体のエラー -->
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <ul>
+                    <li th:each="error : ${#fields.errors('*')}" th:text="${error}"></li>
+                </ul>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+
+            <!-- ユーザーID -->
+            <div class="form-group">
+                <label for="userId" class="form-label">ユーザーID</label>
+                <input type="text" class="form-control" id="userId" th:field="*{userId}" th:readonly="true" required/>
+                <span th:errors="*{userId}" class="text-danger"></span>
+            </div>
+
+            <!-- ユーザー名 -->
+            <div class="form-group">
+                <label for="userName" class="form-label">ユーザー名</label>
+                <input type="text" class="form-control" id="userName" th:field="*{userName}" maxlength="50" required/>
+                <span th:errors="*{userName}" class="text-danger"></span>
+            </div>
+
+            <!-- パスワード -->
+            <div class="form-group">
+                <label for="password" class="form-label" th:text="${!@checkUtils.isNotBlank(userForm.userId) ? 'パスワード' : 'パスワード（変更なしの場合は未入力）'}"></label>
+                <input type="password" class="form-control" id="password" th:field="*{password}" maxlength="10"/>
+                <span th:errors="*{password}" class="text-danger"></span>
+            </div>
+
+            <!-- パスワード確認 -->
+            <div class="form-group">
+                <label for="confirmPassword" class="form-label" th:text="${!@checkUtils.isNotBlank(userForm.userId) ? 'パスワード（確認）' : 'パスワード（確認）（変更なしの場合は未入力）'}"></label>
+                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" maxlength="10"/>
+                <span th:errors="*{confirmPassword}" class="text-danger"></span>
+            </div>
+
+            <!-- ロールID -->
+            <div class="form-group">
+                <label for="roleId" class="form-label">ロールID</label>
+                <select class="form-control" id="roleId" th:field="*{roleId}" required>
+                    <option value="">選択してください</option>
+                    <option th:each="role : ${roles}" th:value="${role.code}" th:text="${role.name}"></option>
+                </select>
+                <span th:errors="*{roleId}" class="text-danger"></span>
+            </div>
+
+            <!-- 性別 -->
+            <div class="form-group">
+                <label for="gender" class="form-label">性別</label>
+                <select class="form-control" id="gender" th:field="*{gender}" required>
+                    <option value="">選択してください</option>
+                    <option th:each="gender : ${genders}" th:value="${gender.code}" th:text="${gender.name}"></option>
+                </select>
+                <span th:errors="*{gender}" class="text-danger"></span>
+            </div>
+
+            <!-- メールアドレス -->
+            <div class="form-group">
+                <label for="email" class="form-label">メールアドレス</label>
+                <input type="email" class="form-control" id="email" th:field="*{email}" maxlength="100"/>
+                <span th:errors="*{email}" class="text-danger"></span>
+            </div>
+
+            <!-- 郵便番号 -->
+            <div class="form-group">
+                <label for="postalCode" class="form-label">郵便番号</label>
+                <input type="text" class="form-control" id="postalCode" th:field="*{postalCode}" maxlength="7" required/>
+                <span th:errors="*{postalCode}" class="text-danger"></span>
+            </div>
+
+            <!-- 住所1 -->
+            <div class="form-group">
+                <label for="address1" class="form-label">住所1</label>
+                <input type="text" class="form-control" id="address1" th:field="*{address1}" maxlength="150" required/>
+                <span th:errors="*{address1}" class="text-danger"></span>
+            </div>
+
+            <!-- 住所2 -->
+            <div class="form-group">
+                <label for="address2" class="form-label">住所2（番地・マンション名 等）</label>
+                <input type="text" class="form-control" id="address2" th:field="*{address2}" maxlength="150"/>
+                <span th:errors="*{address2}" class="text-danger"></span>
+            </div>
+
+            <!-- 備考 -->
+            <div class="form-group">
+                <label for="remarks" class="form-label">備考</label>
+                <textarea class="form-control" id="remarks" th:field="*{remarks}"></textarea>
+                <span th:errors="*{remarks}" class="text-danger"></span>
+            </div>
+
+            <!-- 送信ボタン -->
+            <button type="submit" class="btn btn-primary" th:text="${!@checkUtils.isNotBlank(userForm.userId) ? '登録' : '更新'}"></button>
+        </form>
+    </div>
+
+    <!-- Popper.js（最新バージョン） -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <!-- Bootstrap 4 JavaScript -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- 郵便番号から住所を取得するスクリプト -->
+    <script>
+        $(document).ready(function() {
+            // Enterキーの制御
+            $('#postalCode').on('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Enterキーによるフォーム送信を防ぐ
+                    $(this).blur(); // フォーカスを外して住所検索を実行
+                }
+            });
+
+            // 住所検索処理
+            $('#postalCode').on('blur', function() {
+                var postalCode = $(this).val();
+                if (postalCode.length === 7) { // 7桁の場合のみ
+                    $.ajax({
+                        url: '/address/' + postalCode,
+                        method: 'GET',
+                        success: function(data) {
+                            if (data && data.length > 0) {
+                                var address = data[0]; // 配列の1番目の要素を取得
+                                $('#address1').val(address.allAddress);
+                            } else {
+                                alert('住所が見つかりませんでした。');
+                            }
+                        },
+                        error: function() {
+                            alert('住所の取得に失敗しました。');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

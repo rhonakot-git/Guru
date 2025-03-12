@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <!-- Bootstrap 4 CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- 外部CSS -->
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="login-box p-4">
+            <h2 class="text-center">GuruSystem</h2>
+            <!-- エラーメッセージ（Bootstrap 4のalertに閉じるボタン付き） -->
+            <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show text-left mb-3" role="alert">
+                <ul><li th:text="${session.errorMessage}"></li></ul>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <hr class="title-underline">
+            <form th:action="@{/login}" th:object="${loginForm}" method="post">
+                <!-- UserIdフィールド -->
+                <div class="form-group">
+                    <label for="userId">ユーザーID</label>
+                    <input type="text" class="form-control" id="userId" th:field="*{userId}" placeholder="ユーザーIDを入力" required
+                           pattern="[A-Za-z0-9]+"
+                           maxlength="10">
+                </div>
+                <!-- Passwordフィールド -->
+                <div class="form-group position-relative">
+                    <label for="password">パスワード</label>
+                    <input type="password" class="form-control password-input" id="password" th:field="*{password}" placeholder="パスワードを入力" required
+                           maxlength="10">
+                    <button type="button" class="btn-toggle-password" id="togglePasswordBtn">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <!-- ログインボタン -->
+                <div class="text-right">
+                    <button type="submit" class="btn btn-login">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- パスワード表示/非表示のJavaScript -->
+    <script>
+        document.getElementById('togglePasswordBtn').addEventListener('click', function() {
+            var passwordField = document.getElementById('password');
+            var eyeIcon = this.querySelector('i');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+    </script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <!-- Bootstrap 4 JavaScript -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
