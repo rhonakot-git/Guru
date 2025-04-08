@@ -1,0 +1,182 @@
+<!-- ユーザー登録フォームのフラグメント: メインコンテンツに挿入される -->
+<div th:fragment="content">	
+    <!-- ヘッダーボックス: セクションタイトルを表示 -->
+    <div class="header-box">
+        <h2>ユーザー登録</h2>
+    </div>
+    <!-- 成功メッセージ: 登録や更新が成功した場合に表示 -->
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+
+    <!-- ユーザー登録/更新フォーム: アクションURLにPOST送信 -->
+    <form id="userForm" th:action="${actionUrl}" th:object="${userForm}" method="post">
+        <!-- フォーム全体のエラー: バリデーションエラーがあれば表示 -->
+        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul>
+                <li th:each="error : ${#fields.errors('*')}" th:text="${error}"></li>
+            </ul>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+
+		<!-- ユーザーID -->
+        <div class="form-group col-md-3">
+            <label for="userId" class="form-label">ユーザーID</label>
+            <input type="text" class="form-control" id="userId" th:field="*{userId}" th:readonly="true" required/>
+            <span th:errors="*{userId}" class="text-danger"></span>
+        </div>
+
+        <!-- ユーザー名 -->
+        <div class="form-group col-md-6">
+            <label for="userName" class="form-label">ユーザー名</label>
+            <input type="text" class="form-control" autocomplete="off" id="userName" th:field="*{userName}" maxlength="50" required/>
+            <span th:errors="*{userName}" class="text-danger"></span>
+        </div>
+
+        <!-- パスワードとパスワード（確認）を横並び -->
+		<div class="form-group col-md-8 row">
+            <div class="col-md-4">
+                <label for="password" class="form-label">パスワード</label>
+                <input type="password" class="form-control" id="password" th:field="*{password}" maxlength="10"/>
+                <span th:errors="*{password}" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label for="confirmPassword" class="form-label">パスワード（確認）</label>
+                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" maxlength="10"/>
+                <span th:errors="*{confirmPassword}" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- ロールIDと性別を横並び -->
+		<div class="form-group col-md-8 row">
+            <div class="col-md-4">
+                <label for="roleId" class="form-label">ロールID</label>
+                <select class="form-control" id="roleId" th:field="*{roleId}" required>
+                    <option value="">選択してください</option>
+                    <option th:each="role : ${roles}" th:value="${role.code}" th:text="${role.name}"></option>
+                </select>
+                <span th:errors="*{roleId}" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label for="gender" class="form-label">性別</label>
+                <select class="form-control" id="gender" th:field="*{gender}" required>
+                    <option value="">選択してください</option>
+                    <option th:each="gender : ${genders}" th:value="${gender.code}" th:text="${gender.name}"></option>
+                </select>
+                <span th:errors="*{gender}" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- メールアドレス -->
+        <div class="form-group col-md-6">
+            <label for="email" class="form-label">メールアドレス</label>
+            <input type="email" class="form-control" autocomplete="off" id="email" th:field="*{email}" maxlength="100"/>
+            <span th:errors="*{email}" class="text-danger"></span>
+        </div>
+
+        <!-- 郵便番号 -->
+        <div class="form-group col-md-2">
+            <label for="postalCode" class="form-label">郵便番号</label>
+            <input type="text" class="form-control" autocomplete="off" id="postalCode" th:field="*{postalCode}" maxlength="7" required/>
+            <span th:errors="*{postalCode}" class="text-danger"></span>
+        </div>
+
+        <!-- 住所1 -->
+        <div class="form-group col-md-6">
+            <label for="address1" class="form-label">住所1</label>
+            <input type="text" class="form-control" autocomplete="off" id="address1" th:field="*{address1}" maxlength="150" required/>
+            <span th:errors="*{address1}" class="text-danger"></span>
+        </div>
+
+        <!-- 住所2 -->
+        <div class="form-group col-md-6">
+            <label for="address2" class="form-label">住所2（番地・マンション名 等）</label>
+            <input type="text" class="form-control" autocomplete="off" id="address2" th:field="*{address2}" maxlength="150"/>
+            <span th:errors="*{address2}" class="text-danger"></span>
+        </div>
+
+        <!-- 備考 -->
+        <div class="form-group col-md-8">
+            <label for="remarks" class="form-label">備考</label>
+            <textarea class="form-control" autocomplete="off" id="remarks" th:field="*{remarks}"></textarea>
+            <span th:errors="*{remarks}" class="text-danger"></span>
+        </div>
+
+        <!-- ボタンエリア: 登録/更新ボタンと戻るボタンをフォーム内に移動 -->
+        <div class="d-flex justify-content-end">
+            <!-- 登録/更新ボタン: type="submit"に変更 -->
+            <button id="submitButton" type="submit" class="btn btn-primary mr-2" th:classappend="${!@checkUtils.isNotBlank(userForm.userId) ? 'register-btn' : 'update-btn'}">
+                <i th:class="${!@checkUtils.isNotBlank(userForm.userId) ? 'fas fa-user-plus' : 'fas fa-user-edit'}"></i>
+                <span th:text="${!@checkUtils.isNotBlank(userForm.userId) ? ' 登録' : ' 更新'}"></span>
+            </button>
+            
+            <!-- 戻るボタン: 条件付きで表示 -->
+            <th:block th:if="${showBackButton}">
+                <button id="backButton" type="button" class="btn btn-warning">
+                    <i class="fa fa-mail-reply"></i> 戻る
+                </button>
+            </th:block>
+        </div>
+    </form>
+
+    <!-- 戻るボタン用の隠しフォーム（フォーム外に配置） -->
+    <th:block th:if="${showBackButton}">
+        <form id="backForm" class="d-none" th:action="@{/user/search}" method="post">
+            <input type="hidden" name="userId" th:value="${searchForm.userId}" />
+            <input type="hidden" name="userName" th:value="${searchForm.userName}" />
+            <input type="hidden" name="roleId" th:value="${searchForm.roleId}" />
+            <input type="hidden" name="gender" th:value="${searchForm.gender}" />
+            <input type="hidden" name="address" th:value="${searchForm.address}" />
+            <input type="hidden" name="email" th:value="${searchForm.email}" />
+            <input type="hidden" name="page" th:value="${currentPage}" />
+        </form>
+    </th:block>
+
+    <!-- jQueryスクリプト -->
+    <script>
+        $(document).ready(function() {
+            // 郵便番号入力時にEnterキーで住所検索
+            $('#postalCode').on('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // フォーム送信を防ぐ
+                    $(this).blur(); // フォーカスを外して住所検索を実行
+                }
+            });
+
+            // 郵便番号が7桁の場合に住所を自動入力
+            $('#postalCode').on('blur', function() {
+                var postalCode = $(this).val();
+                if (postalCode.length === 7) {
+                    $.ajax({
+                        url: '/address/' + postalCode,
+                        method: 'GET',
+                        success: function(data) {
+                            if (data && data.length > 0) {
+                                var address = data[0];
+                                $('#address1').val(address.allAddress);
+                            } else {
+                                alert('住所が見つかりませんでした。');
+                            }
+                        },
+                        error: function() {
+                            alert('住所の取得に失敗しました。');
+                        }
+                    });
+                }
+            });
+
+            // 戻るボタンのクリックイベント
+            $('#backButton').on('click', function(e) {
+                e.preventDefault(); // デフォルト動作を防ぐ
+                $('#backForm').submit(); // 戻るフォームを送信
+            });
+        });
+    </script>
+
+    <!-- カスタムCSS: エラーメッセージのスタイル調整 -->
+    <style>
+        .alert ul {
+            margin-bottom: 0;
+        }
+    </style>
+</div>

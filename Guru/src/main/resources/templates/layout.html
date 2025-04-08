@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用するための名前空間を指定 -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<!-- 文字エンコーディングをUTF-8に設定 -->
+    <meta charset="UTF-8">
+    <!-- ビューポート設定: レスポンシブデザインに対応 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ページタイトル -->
+    <title>GuruSystem</title>
+    <!-- Bootstrap 4 CSS: スタイリング用の外部CSSフレームワーク -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome（最新バージョン）: アイコン表示用の外部CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- jQuery UIのCSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/smoothness/jquery-ui.css">
+    
+    <!-- まずjQueryを読み込む -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- 次にjQuery UIを読み込む -->
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+    <!-- Popper.js（最新バージョン）: Bootstrapのツールチップやポップオーバーに必要 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <!-- Bootstrap 4 JavaScript: Bootstrapの機能を提供 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	
+    <!-- 内部CSS: サイドバーやヘッダーなどのスタイルを定義 -->
+    <style>
+        .sidebar {
+            background-color: #3c8dbc;
+            color: white;
+            position: fixed;
+            top: 55px;
+            left: 0;
+            width: 250px;
+            height: calc(100vh - 55px);
+            overflow-y: auto;
+            padding: 15px;
+        }
+        .sidebar .nav-link {
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .sidebar .nav-link:hover {
+            background-color: #367fa9;
+        }
+        .sidebar .nav-link.system-setting {
+            font-size: 18px;
+            font-weight: bolder;
+        }
+        .header-top {
+            background: linear-gradient(90deg, #3c8dbc, #5d9cec);
+            color: white;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .header-top h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        .header-top .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-top .user-actions a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .header-top .user-actions a:hover {
+            text-decoration: underline;
+        }
+        .main-content {
+            background-color: white;
+            padding: 20px;
+            margin-left: 250px;
+            padding-top: 75px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .header-box {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .header-box h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            color: #333;
+        }
+        .sidebar .collapse .nav-link {
+            font-size: 16px;
+            padding-left: 15px;
+        }
+        .sidebar .collapse .nav-link i {
+            margin-right: 5px;
+        }
+        .collapse {
+            display: none;
+        }
+        .collapse.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー: システム名とユーザーアクション（ログアウトなど）を表示 -->
+    <header class="header-top">
+		<h1>
+	        <a href="/menu" style="color: white; text-decoration: none;">GuruSystem</a>
+	    </h1>
+		<div class="user-actions">
+            <!-- ログイン中のユーザー名を表示 -->
+            <span th:text="'ようこそ、 ' + ${loginName} + ' さん'"></span>
+            <!-- ログアウトリンク: クリックでログアウトフォームを送信 -->
+            <a href="#" onclick="document.getElementById('logout-form').submit();">ログアウト</a>
+            <!-- ログアウト用の隠しフォーム: CSRFトークンを含む -->
+            <form id="logout-form" action="/logout" method="post" style="display:none;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            </form>
+        </div>
+    </header>
+    <!-- メインコンテンツ: サイドバーとメイン領域を配置 -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー: カテゴリごとのメニューを表示 -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                <ul class="nav flex-column">
+                    <!-- カテゴリごとのループ: カテゴリ名とその下のメニューを表示 -->
+                    <li class="nav-item" th:each="category : ${categories}">
+                        <!-- カテゴリリンク: クリックでサブメニューを展開/折りたたみ -->
+                        <a class="nav-link system-setting" data-toggle="collapse" th:href="'#' + ${category.categoryId}" role="button" aria-expanded="false" th:attr="aria-controls=${category.categoryId}">
+                            <i th:class="${category.iconTag}"></i> <span th:text="${category.categoryName}"></span>
+                        </a>
+                        <!-- サブメニュー: 各カテゴリに属するメニューを表示 -->
+                        <div class="collapse" th:id="${category.categoryId}">
+                            <ul class="nav flex-column ml-3">
+                                <li class="nav-item" th:each="menu : ${menus[category.categoryId]}">
+                                    <a class="nav-link" th:href="${menu.menuUrl}"><i th:class="${menu.iconTag}"></i> <span th:text="${menu.menuName}"></span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <!-- メインコンテンツ領域: 動的に読み込まれるコンテンツを表示 -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div th:replace="~{${templateName} :: content}"></div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

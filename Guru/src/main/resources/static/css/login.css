@@ -1,0 +1,79 @@
+.login-box {
+    border: 1px solid #add8e6; /* 薄い青のボーダー */
+    border-radius: 10px; /* 角丸 */
+    background-color: #ffffff; /* 白背景 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 軽い影で浮かせる */
+    width: 100%;
+    max-width: 400px; /* 最大幅を制限 */
+}
+
+h2 {
+    color: #333; /* ダークグレー */
+    font-weight: bold; /* 太字 */
+}
+
+.title-underline {
+    border-top: 1px solid #add8e6; /* 薄い青の線 */
+    margin: 10px 0 20px; /* 上下の余白 */
+}
+
+.form-control {
+    border: 1px solid #add8e6; /* 入力欄に薄い青のボーダー */
+    border-radius: 5px; /* 角丸 */
+}
+
+.password-input {
+    padding-right: 30px; /* トグルボタンのスペースを確保 */
+    position: relative;
+}
+
+.btn-login {
+    background-color: #00CCCC; /* 薄い青の背景 */
+    border: 1px solid #ffffff; /* 白のボーダー */
+    color: #ffffff; /* 白文字 */
+    border-radius: 5px; /* 角丸 */
+    padding: 10px 20px; /* 内余白 */
+    margin-top: 10px; /* パスワードフィールドとボタンの間に10pxの隙間を追加 */
+}
+
+.btn-login:hover {
+    background-color: #87ceeb; /* ホバー時に少し濃い青 */
+}
+
+/* トグルボタンのシンプルなスタイル（入力欄内、右端にぴったり） */
+.btn-toggle-password {
+    position: absolute;
+    right: 3px; /* 右端にぴったり配置 */
+    top: 70%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: 30px; /* 正方形の幅 */
+    height: 30px; /* 正方形の高さ */
+    border-radius: 0; /* 角丸なし */
+}
+
+.btn-toggle-password:focus {
+    outline: none; /* フォーカス時の枠線を削除 */
+}
+
+.btn-toggle-password i {
+    font-size: 16px; /* アイコンのサイズ */
+    color: #333; /* アイコンの色 */
+}
+
+.alert ul {
+    margin-bottom: 0;
+}
+
+/* 入力フィールド間に隙間を設ける */
+.form-group {
+    margin-bottom: 15px; /* ユーザーIDとパスワードの間に15pxの隙間を追加 */
+}
+
+/* ラベルと入力ボックスの間に隙間を設ける */
+label {
+    margin-bottom: 5px; /* ラベルの下に5pxの隙間を追加 */
+}

@@ -1,0 +1,55 @@
+<!-- ニュースコンテンツのフラグメント: メインコンテンツに挿入される -->
+<div th:fragment="content">
+    <!-- ヘッダーボックス: セクションタイトルを表示 -->
+    <div class="header-box">
+        <h2>News</h2>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <!-- ニュースがない場合の表示 -->
+            <div th:if="${newsData == null or newsData.articles == null or newsData.articles.isEmpty()}">
+                <p>ニュースがありません</p>
+            </div>
+            <!-- ニュース記事のループ: 各記事のタイトル、公開日、画像、説明を表示 -->
+            <div th:each="article : ${newsData.articles}" class="news-item">
+                <div class="title-date">
+                    <a th:href="${article.url}" target="_blank">
+                        <h3 th:text="${article.title}"></h3>
+                    </a>
+                    <p th:text="${article.publishedAt}"></p>
+                </div>
+                <div class="image-description">
+                    <a th:if="${article.urlToImage}" th:href="${article.urlToImage}" target="_blank">
+                        <img th:src="${article.urlToImage}" alt="ニュース画像">
+                    </a>
+                    <p th:text="${article.description}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ニュースアイテムのスタイル: ニュース記事の表示形式を定義 -->
+    <style>
+        .news-item {
+            background-color: #ecf0f5;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .news-item .title-date {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .news-item .title-date h3 { font-size: 18px; font-weight: bold; margin: 0; }
+        .news-item .title-date p { font-size: 14px; color: #555; margin: 0; }
+        .news-item .image-description { display: flex; align-items: flex-start; gap: 15px; }
+        .news-item .image-description img { max-width: 100px; max-height: 100px; object-fit: cover; margin: 0; }
+        .news-item .image-description p { font-size: 14px; color: #555; margin: 0; }
+    </style>
+</div>

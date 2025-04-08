@@ -1,0 +1,10 @@
+<!-- ユーザー検索フォームのフラグメント: メインコンテンツに挿入される -->
+<div th:fragment="content">
+    <!-- ヘッダーボックス: セクションタイトルを表示 -->
+    <div class="header-box">
+        <h2>ユーザーEXCEL出力</h2>
+    </div>
+	<form th:action="@{/user_excel/excel}" method="post">
+		<button type="submit" class="btn btn-primary"><i class="fa fa-file-excel"></i> EXCEL出力</button>
+    </form>
+</div>

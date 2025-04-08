@@ -1,0 +1,56 @@
+// プラグインの設定
+plugins {
+    id 'java'                                  				 // Javaプロジェクト用のプラグイン
+    id 'org.springframework.boot' version '3.4.3' 			 // Spring Bootプラグイン（バージョン3.4.3）
+    id 'io.spring.dependency-management' version '1.1.7'	 // 依存関係管理用のプラグイン
+}
+
+// プロジェクトのグループ名とバージョン
+group = 'com.example.guru'                    				 // プロジェクトのグループID
+version = '0.0.1-SNAPSHOT'                   				 // プロジェクトのバージョン（スナップショット）
+
+// Javaの設定
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17) 		 // Java 17を使用
+    }
+}
+
+// 依存関係を取得するリポジトリ
+repositories {
+    mavenCentral()                           				 // Maven Centralリポジトリを使用
+}
+
+// 依存関係の設定
+dependencies {
+    // 既存の依存関係（データベース、セキュリティ、Web、Thymeleaf関連）
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'       // JPAを使用したデータベースアクセス
+    implementation 'org.springframework.boot:spring-boot-starter-security'       // Spring Security（認証・認可）
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'      // Thymeleafテンプレートエンジン
+    implementation 'org.springframework.boot:spring-boot-starter-web'            // Spring MVC（Webアプリケーション用）
+    implementation 'org.springframework.boot:spring-boot-starter-validation'     // バリデーション機能
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'       // ThymeleafとSpring Securityの統合
+    implementation files('libs/ojdbc11.jar')                                     // Oracle JDBCドライバ（ローカルファイル）
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'        // WebClientを使ったリアクティブなHTTPクライアント
+    implementation 'org.springframework.boot:spring-boot-starter-cache'          // キャッシュ機能の有効化
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'          // JSONデータをJavaオブジェクトに変換するためのライブラリ
+    implementation 'org.apache.commons:commons-csv:1.8'
+    implementation 'com.opencsv:opencsv:5.9'
+    implementation 'net.sf.jasperreports:jasperreports:6.21.3'
+    implementation 'net.sf.jasperreports:jasperreports-fonts:6.21.3'
+    implementation 'com.itextpdf:itextpdf:5.5.13.3'
+    implementation 'org.apache.poi:poi:5.2.3'
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+    
+    implementation files('libs/iTextAsian.jar')
+
+    // テスト関連（既存）
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'       // Spring Bootテスト用依存関係
+    testImplementation 'org.springframework.security:spring-security-test'       // Spring Securityのテスト用
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'                 // JUnitプラットフォームランチャー
+}
+
+// テストタスクの設定
+tasks.named('test') {
+    useJUnitPlatform()                       									 // JUnitプラットフォームを使用
+}

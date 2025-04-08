@@ -1,0 +1,10 @@
+<!-- ユーザー検索フォームのフラグメント: メインコンテンツに挿入される -->
+<div th:fragment="content">
+    <!-- ヘッダーボックス: セクションタイトルを表示 -->
+    <div class="header-box">
+        <h2>ユーザーレポート出力</h2>
+    </div>
+	<form th:action="@{/user_reports/reports}" method="post" target="_blank">
+		<button type="submit" class="btn btn-primary"><i class="fa fa-print"></i> レポート出力</button>
+    </form>
+</div>

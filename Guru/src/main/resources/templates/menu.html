@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuruSystem</title>
+    <!-- Bootstrap 4 CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome 6.6.0（最新バージョン） -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        /* 左側のサイドバー全体のスタイル */
+        .sidebar {
+            background-color: #3c8dbc; /* サイドバーの背景色を青に設定 */
+            color: white; /* サイドバー内の文字色を白に */
+            position: fixed; /* サイドバーを固定 */
+            top: 55px; /* ヘッダーの実際の高さに合わせて調整 */
+            left: 0;
+            width: 250px; /* 固定幅を指定 */
+            height: calc(100vh - 55px); /* ヘッダーを除いた高さ */
+            overflow-y: auto; /* メニューが多い場合にスクロール可能 */
+            padding: 15px; /* サイドバー内の上下左右に15pxの余白 */
+        }
+        /* サイドバーのリンク（「システム設定」やサブメニューの各項目）のスタイル */
+        .sidebar .nav-link {
+            color: white; /* リンク文字を白に */
+            font-weight: bold; /* 文字を太く */
+            font-size: 16px; /* 文字サイズを16pxに */
+        }
+        /* サイドバーのリンクにマウスを乗せた時のスタイル */
+        .sidebar .nav-link:hover {
+            background-color: #367fa9; /* ホバー時の背景色を濃い青に */
+        }
+        /* サイドバーの「システム設定」リンクの特別なスタイル */
+        .sidebar .nav-link.system-setting {
+            font-size: 18px; /* 「システム設定」の文字サイズを18pxに */
+            font-weight: bolder; /* さらに太くして強調 */
+        }
+        /* 上部のヘッダー全体のスタイル */
+        .header-top {
+            background: linear-gradient(90deg, #3c8dbc, #5d9cec); /* ヘッダーに青のグラデーション */
+            color: white; /* ヘッダー内の文字色を白に */
+            padding: 10px 20px; /* 上下10px、左右20pxの余白 */
+            border-bottom: 1px solid #ddd; /* 下に薄いグレーの線 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 影を追加 */
+            display: flex; /* 要素を横に並べる */
+            justify-content: space-between; /* 左右に要素を配置 */
+            align-items: center; /* 上下中央に揃える */
+            position: fixed; /* ヘッダーを固定 */
+            top: 0;
+            left: 0;
+            width: 100%; /* 幅を画面全体に */
+            z-index: 1000; /* 他の要素の上に表示 */
+        }
+        /* ヘッダーの「GuruSystem」タイトルのスタイル */
+        .header-top h1 {
+            font-size: 28px; /* タイトルの文字サイズを28pxに */
+            font-weight: bold; /* 太字で強調 */
+            margin: 0; /* 余白をなくす */
+            font-family: 'Arial', sans-serif; /* フォントをArialに */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* 文字に影を追加 */
+        }
+        /* ヘッダー右側の「ようこそ、〇〇さん」と「ログアウト」のエリアのスタイル */
+        .header-top .user-actions {
+            display: flex; /* 要素を横に並べる */
+            align-items: center; /* 上下中央に揃える */
+            gap: 15px; /* 要素間に15pxの間隔 */
+        }
+        /* ヘッダー内の「ログアウト」リンクのスタイル */
+        .header-top .user-actions a {
+            color: white; /* リンク文字を白に */
+            text-decoration: none; /* 下線を消す */
+            font-size: 16px; /* 文字サイズを16pxに */
+            font-weight: bold; /* 太字で強調 */
+        }
+        /* ヘッダー内の「ログアウト」リンクにマウスを乗せた時のスタイル */
+        .header-top .user-actions a:hover {
+            text-decoration: underline; /* ホバー時に下線を表示 */
+        }
+        /* メインコンテンツ全体（サイドバーの右側）のスタイル */
+        .main-content {
+            background-color: white; /* 背景を白に */
+            padding: 20px; /* 上下左右に20pxの余白 */
+            margin-left: 250px; /* サイドバーの幅分だけ左に余白 */
+            padding-top: 75px; /* ヘッダーの高さ（55px）+ 余白 */
+            height: 100vh; /* 高さを画面全体に */
+            overflow-y: auto; /* メインコンテンツのみスクロール可能 */
+        }
+        /* メインコンテンツの上部「編集メニュー」のボックスのスタイル */
+        .header-box {
+            background-color: #f5f5f5; /* 背景を薄いグレーに */
+            padding: 10px; /* 上下左右に10pxの余白 */
+            border: 1px solid #ddd; /* 薄いグレーの枠線 */
+            margin-bottom: 20px; /* 下に20pxの間隔 */
+            border-radius: 5px; /* 角を丸く */
+        }
+        /* 「編集メニュー」の見出しのスタイル */
+        .header-box h2 {
+            font-size: 24px; /* 文字サイズを24pxに */
+            font-weight: bold; /* 太字で強調 */
+            margin: 0; /* 余白をなくす */
+            color: #333; /* 文字色を濃いグレーに */
+        }
+        /* ニュースアイテムのスタイル調整 */
+        .news-item {
+            background-color: #ecf0f5;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .news-item .title-date {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .news-item .title-date h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .news-item .title-date p {
+            font-size: 14px;
+            color: #555;
+            margin: 0;
+        }
+        .news-item .image-description {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .news-item .image-description img {
+            max-width: 100px; /* 画像を小さく */
+            max-height: 100px; /* 画像を小さく */
+            object-fit: cover;
+            margin: 0;
+        }
+        .news-item .image-description p {
+            font-size: 14px;
+            color: #555;
+            margin: 0;
+        }
+        /* タイトルリンクのスタイル調整 */
+        .news-item .title-date a {
+            text-decoration: underline; /* デフォルトで下線を表示 */
+            color: #0000EE; /* リンクのデフォルト色（青） */
+        }
+        .news-item .title-date a:visited {
+            color: #551A8B; /* 訪問済みのリンクを紫に変更 */
+        }
+        /* 画像リンクのスタイル調整 */
+        .news-item .image-description a img {
+            border: 2px solid transparent; /* デフォルトでは枠線なし */
+            transition: border 0.3s ease; /* ホバー時の変化を滑らかに */
+        }
+        .news-item .image-description a:hover img {
+            border: 2px solid #0000EE; /* ホバー時に青い枠線を表示 */
+            box-shadow: 0 0 5px rgba(0, 0, 238, 0.5); /* 影を追加 */
+        }
+        /* 訪問済みの画像リンクを視覚的に区別 */
+        .news-item .image-description a:visited img {
+            border: 2px solid #551A8B; /* 訪問済みは紫の枠線 */
+        }
+        /* メインコンテンツ内の各タイル（「基本設定」「メール設定」など）のスタイル */
+        .tile {
+            background-color: #ecf0f5; /* タイルの背景を薄いグレーに */
+            border: 1px solid #ddd; /* 薄いグレーの枠線 */
+            padding: 20px; /* 上下左右に20pxの余白 */
+            text-align: center; /* アイコンと文字を中央揃え */
+            margin-bottom: 20px; /* 下に20pxの間隔 */
+            border-radius: 8px; /* 角を丸く */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 影を追加 */
+            transition: transform 0.2s ease; /* ホバー時の動きを滑らかに */
+        }
+        /* タイルにマウスを乗せた時のスタイル */
+        .tile:hover {
+            transform: translateY(-5px); /* 5px上に浮かせる */
+        }
+        /* タイル内のアイコン（歯車、封筒など）のスタイル */
+        .tile i {
+            font-size: 40px; /* アイコンのサイズを40pxに */
+            color: #3c8dbc; /* アイコンを青に */
+            margin-bottom: 10px; /* アイコンと文字の間に10pxの間隔 */
+        }
+        /* タイル内のテキスト（「基本設定」「メール設定」など）のスタイル */
+        .tile p {
+            font-size: 16px; /* 文字サイズを16pxに */
+            font-weight: bold; /* 太字で強調 */
+            margin: 0; /* 余白をなくす */
+            color: #333; /* 文字色を濃いグレーに */
+        }
+        /* サイドバーのサブメニュー（「基本設定」「メール設定」など）のリンクのスタイル */
+        .sidebar .collapse .nav-link {
+            font-size: 16px; /* 文字サイズを16pxに */
+            padding-left: 15px; /* 左に15pxの余白で階層感を出す */
+        }
+        /* サイドバーのサブメニュー内のアイコンのスタイル */
+        .sidebar .collapse .nav-link i {
+            margin-right: 5px; /* アイコンと文字の間に5pxの間隔 */
+        }
+        /* サイドバーのサブメニュー全体の初期状態（非表示）のスタイル */
+        .collapse {
+            display: none; /* 初期状態で非表示 */
+        }
+        /* サイドバーのサブメニューが展開された時のスタイル */
+        .collapse.show {
+            display: block; /* 展開時に表示 */
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダーをコンテナの外に移動 -->
+    <header class="header-top">
+        <h1>GuruSystem</h1>
+        <div class="user-actions">
+            <span th:text="'ようこそ、 ' + ${loginName} + ' さん'"></span>
+            <a href="#" onclick="document.getElementById('logout-form').submit();">ログアウト</a>
+            <form id="logout-form" action="/logout" method="post" style="display:none;">
+            </form>
+        </div>
+    </header>
+<div class="container-fluid">
+    <div class="row">
+        <!-- 左サイドバー -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item" th:each="category : ${categories}">
+                    <a class="nav-link system-setting" data-toggle="collapse" th:href="'#' + ${category.categoryId}" role="button" aria-expanded="false" th:attr="aria-controls=${category.categoryId}">
+                        <i th:class="${category.iconTag}"></i> <span th:text="${category.categoryName}"></span>
+                    </a>
+                    <div class="collapse" th:id="${category.categoryId}">
+                        <ul class="nav flex-column ml-3">
+                            <li class="nav-item" th:each="menu : ${menus[category.categoryId]}">
+                                <a class="nav-link" th:href="${menu.menuUrl}"><i th:class="${menu.iconTag}"></i> <span th:text="${menu.menuName}"></span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- メインコンテンツ -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="header-box">
+                <h2>News</h2>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- ニュース取得中の表示 -->
+                    <div id="news-loading" style="text-align: center; padding: 20px;">
+                        <p>ニュース取得中...</p>
+                    </div>
+                    <!-- ニュース表示用のコンテナ -->
+                    <div id="news-container" style="display: none;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- JavaScriptで非同期にニュースを取得 -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // ニュースAPIを呼び出してデータを取得
+        fetch('/news')
+            .then(response => response.json())
+            .then(data => {
+                const newsContainer = document.getElementById('news-container');
+                const newsLoading = document.getElementById('news-loading');
+
+                // ニュース取得中メッセージを非表示に
+                newsLoading.style.display = 'none';
+                newsContainer.style.display = 'block'; // ニュースコンテナを表示
+
+                if (data.articles && data.articles.length > 0) {
+                    // ニュース記事を動的に追加
+                    data.articles.forEach(article => {
+                        const newsItem = `
+                            <div class="news-item">
+                                <div class="title-date">
+                                    <a href="${article.url}" target="_blank">
+                                        <h3>${article.title}</h3>
+                                    </a>
+                                    <p>${article.publishedAt}</p>
+                                </div>
+                                <div class="image-description">
+                                    ${article.urlToImage ? `
+                                        <a href="${article.urlToImage}" target="_blank">
+                                            <img src="${article.urlToImage}" alt="ニュース画像">
+                                        </a>
+                                    ` : ''}
+                                    <p>${article.description}</p>
+                                </div>
+                            </div>
+                        `;
+                        newsContainer.innerHTML += newsItem;
+                    });
+                } else {
+                    newsContainer.innerHTML = '<p>ニュースがありません</p>';
+                }
+            })
+            .catch(error => {
+                console.error('ニュース取得エラー:', error);
+                const newsContainer = document.getElementById('news-container');
+                const newsLoading = document.getElementById('news-loading');
+                newsLoading.style.display = 'none';
+                newsContainer.style.display = 'block';
+                newsContainer.innerHTML = '<p>ニュースの取得に失敗しました</p>';
+            });
+    });
+</script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<!-- Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<!-- Bootstrap 4 JavaScript -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+

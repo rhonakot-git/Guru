@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用するための名前空間を指定 -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- 文字エンコーディングをUTF-8に設定 -->
+    <meta charset="UTF-8">
+    <!-- ページタイトル -->
+    <title>Login</title>
+    <!-- Bootstrap 4 CSS: スタイリング用の外部CSSフレームワーク -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome: アイコン表示用の外部CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- 外部CSS: ログイン画面専用のカスタムスタイル -->
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+    <!-- 画面中央にログインBOXを配置するためのコンテナ -->
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="login-box p-4">
+            <!-- システム名の表示 -->
+            <h2 class="text-center">GuruSystem</h2>
+            <!-- エラーメッセージ表示エリア -->
+            <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show text-left mb-3" role="alert">
+                <ul><li th:text="${session.errorMessage}"></li></ul>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <!-- タイトル下の区切り線 -->
+            <hr class="title-underline">
+            <!-- ログインフォーム -->
+            <form th:action="@{/login}" th:object="${loginForm}" method="post">
+                <!-- ユーザーID -->
+                <div class="form-group">
+                    <label for="userId">ユーザーID</label>
+                    <input type="text" class="form-control" autocomplete="off" id="userId" th:field="*{userId}" placeholder="ユーザーIDを入力" required
+                           pattern="[A-Za-z0-9]+" maxlength="10">
+                </div>
+                <!-- パスワード -->
+                <div class="form-group position-relative">
+                    <label for="password">パスワード</label>
+                    <input type="password" class="form-control password-input" id="password" th:field="*{password}" placeholder="パスワードを入力" required
+                           maxlength="10">
+                    <button type="button" class="btn-toggle-password" id="togglePasswordBtn">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <!-- ログインボタン -->
+                <div class="text-right">
+                    <button type="submit" class="btn btn-login">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+	
+	<!-- jQuery: BootstrapのJavaScript機能に必要 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Popper.js: Bootstrapのツールチップやポップオーバーに必要 -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <!-- Bootstrap 4 JavaScript: Bootstrapの機能を提供 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	
+    <!-- パスワード表示/非表示切り替え機能のJavaScript -->
+    <script>
+		$(document).ready(function() {
+		    $('#togglePasswordBtn').on('click', function() {
+		        var $passwordField = $('#password');
+		        var $eyeIcon = $(this).find('i');
+		        if ($passwordField.prop('type') === 'password') {
+		            $passwordField.prop('type', 'text');
+		            $eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
+		        } else {
+		            $passwordField.prop('type', 'password');
+		            $eyeIcon.removeClass('fa-eye-slash').addClass('fa-eye');
+		        }
+		    });
+		});
+    </script>
+</body>
+</html>
