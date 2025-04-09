@@ -7,7 +7,11 @@ plugins {
 
 // プロジェクトのグループ名とバージョン
 group = 'com.example.guru'                    				 // プロジェクトのグループID
-version = '0.0.1-SNAPSHOT'                   				 // プロジェクトのバージョン（スナップショット）
+version = '1.0'                   				 			 // プロジェクトのバージョン（スナップショット）
+
+springBoot {
+    mainClass = 'com.example.guru.GuruApplication'
+}
 
 // Javaの設定
 java {
