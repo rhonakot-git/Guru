@@ -32,7 +32,7 @@ public abstract class BaseController {
     protected MenuService menuService;
 
     /**
-     * 認証情報に基づいて、ログイン名やアクセス可能なメニュー情報をモデルに追加します。
+     * 認証情報に基づいて、ログイン名、ロール、アクセス可能なメニュー情報をモデルに追加します。
      * 
      * @param model ビューに渡すモデル
      * @param authentication 現在の認証情報
@@ -47,6 +47,16 @@ public abstract class BaseController {
             
             // ユーザー名からユーザー情報を取得
             MUser mUser = menuService.getUserInfo(user.getUsername());  
+            
+            // ロールID取得
+            String role = authentication.getAuthorities().stream()
+                    .map(Object::toString)
+                    .findFirst()
+                    .orElse("");
+            
+            // ロールが "ROLE_USER" なら true、それ以外なら false を設定
+            boolean isUserRole = "ROLE_USER".equals(role);
+            model.addAttribute("isUserRole", isUserRole);
             
             // ログイン名をモデルに追加
             model.addAttribute("loginName", mUser.getUserName());

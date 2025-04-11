@@ -24,7 +24,7 @@
 	            <input type="file" class="form-control-file" id="file" name="file" accept=".csv">
 	        </div>
 	        <div class="col-md-6 d-flex align-items-end">
-	            <button type="submit" class="btn btn-primary">インポート</button>
+	            <button type="submit" class="btn btn-primary" th:disabled="${isUserRole}">インポート</button>
 	        </div>
 	    </div>
 	</form>
@@ -170,6 +170,12 @@
                 $('#page').val(page);
                 $('#searchForm').submit();
             };
+			
+			if ('[[${isUserRole}]]' === 'true') {
+			    $('#file').prop('disabled', true);
+			    $('#file').addClass('file-input-disabled');
+			}
+			
         });
     </script>
     <!-- カスタムCSS: テーブルヘッダーのスタイル -->

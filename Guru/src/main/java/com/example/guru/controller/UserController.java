@@ -172,6 +172,14 @@ public class UserController extends BaseController {
     @GetMapping("/userRegist")
     public String showRegisterForm(Model model) {
     	
+    	// セッション取得
+        HttpSession session = getSession();
+    	
+    	// セッションから"userSearchForm"を削除
+        session.removeAttribute("searchForm");
+        // セッションから"currentPage"を削除
+        session.removeAttribute("currentPage");
+    	
     	// 登録フォームをモデルに追加
         model.addAttribute("userForm", new UserForm());
         // 登録処理のURLを指定

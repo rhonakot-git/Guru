@@ -19,39 +19,39 @@
             </button>
         </div>
 
-		<!-- ユーザーID -->
+        <!-- ユーザーID -->
         <div class="form-group col-md-3">
             <label for="userId" class="form-label">ユーザーID</label>
-            <input type="text" class="form-control" id="userId" th:field="*{userId}" th:readonly="true" required/>
+            <input type="text" class="form-control" id="userId" th:field="*{userId}" th:readonly="true" required th:disabled="${isUserRole}"/>
             <span th:errors="*{userId}" class="text-danger"></span>
         </div>
 
         <!-- ユーザー名 -->
         <div class="form-group col-md-6">
             <label for="userName" class="form-label">ユーザー名</label>
-            <input type="text" class="form-control" autocomplete="off" id="userName" th:field="*{userName}" maxlength="50" required/>
+            <input type="text" class="form-control" autocomplete="off" id="userName" th:field="*{userName}" maxlength="50" required th:disabled="${isUserRole}"/>
             <span th:errors="*{userName}" class="text-danger"></span>
         </div>
 
         <!-- パスワードとパスワード（確認）を横並び -->
-		<div class="form-group col-md-8 row">
+        <div class="form-group col-md-8 row">
             <div class="col-md-4">
                 <label for="password" class="form-label">パスワード</label>
-                <input type="password" class="form-control" id="password" th:field="*{password}" maxlength="10"/>
+                <input type="password" class="form-control" id="password" th:field="*{password}" maxlength="10" th:disabled="${isUserRole}"/>
                 <span th:errors="*{password}" class="text-danger"></span>
             </div>
             <div class="col-md-4">
                 <label for="confirmPassword" class="form-label">パスワード（確認）</label>
-                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" maxlength="10"/>
+                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" maxlength="10" th:disabled="${isUserRole}"/>
                 <span th:errors="*{confirmPassword}" class="text-danger"></span>
             </div>
         </div>
 
         <!-- ロールIDと性別を横並び -->
-		<div class="form-group col-md-8 row">
+        <div class="form-group col-md-8 row">
             <div class="col-md-4">
                 <label for="roleId" class="form-label">ロールID</label>
-                <select class="form-control" id="roleId" th:field="*{roleId}" required>
+                <select class="form-control" id="roleId" th:field="*{roleId}" required th:disabled="${isUserRole}">
                     <option value="">選択してください</option>
                     <option th:each="role : ${roles}" th:value="${role.code}" th:text="${role.name}"></option>
                 </select>
@@ -59,7 +59,7 @@
             </div>
             <div class="col-md-4">
                 <label for="gender" class="form-label">性別</label>
-                <select class="form-control" id="gender" th:field="*{gender}" required>
+                <select class="form-control" id="gender" th:field="*{gender}" required th:disabled="${isUserRole}">
                     <option value="">選択してください</option>
                     <option th:each="gender : ${genders}" th:value="${gender.code}" th:text="${gender.name}"></option>
                 </select>
@@ -70,42 +70,42 @@
         <!-- メールアドレス -->
         <div class="form-group col-md-6">
             <label for="email" class="form-label">メールアドレス</label>
-            <input type="email" class="form-control" autocomplete="off" id="email" th:field="*{email}" maxlength="100"/>
+            <input type="email" class="form-control" autocomplete="off" id="email" th:field="*{email}" maxlength="100" th:disabled="${isUserRole}"/>
             <span th:errors="*{email}" class="text-danger"></span>
         </div>
 
         <!-- 郵便番号 -->
         <div class="form-group col-md-2">
             <label for="postalCode" class="form-label">郵便番号</label>
-            <input type="text" class="form-control" autocomplete="off" id="postalCode" th:field="*{postalCode}" maxlength="7" required/>
+            <input type="text" class="form-control" autocomplete="off" id="postalCode" th:field="*{postalCode}" maxlength="7" required th:disabled="${isUserRole}"/>
             <span th:errors="*{postalCode}" class="text-danger"></span>
         </div>
 
         <!-- 住所1 -->
         <div class="form-group col-md-6">
             <label for="address1" class="form-label">住所1</label>
-            <input type="text" class="form-control" autocomplete="off" id="address1" th:field="*{address1}" maxlength="150" required/>
+            <input type="text" class="form-control" autocomplete="off" id="address1" th:field="*{address1}" maxlength="150" required th:disabled="${isUserRole}"/>
             <span th:errors="*{address1}" class="text-danger"></span>
         </div>
 
         <!-- 住所2 -->
         <div class="form-group col-md-6">
             <label for="address2" class="form-label">住所2（番地・マンション名 等）</label>
-            <input type="text" class="form-control" autocomplete="off" id="address2" th:field="*{address2}" maxlength="150"/>
+            <input type="text" class="form-control" autocomplete="off" id="address2" th:field="*{address2}" maxlength="150" th:disabled="${isUserRole}"/>
             <span th:errors="*{address2}" class="text-danger"></span>
         </div>
 
         <!-- 備考 -->
         <div class="form-group col-md-8">
             <label for="remarks" class="form-label">備考</label>
-            <textarea class="form-control" autocomplete="off" id="remarks" th:field="*{remarks}"></textarea>
+            <textarea class="form-control" autocomplete="off" id="remarks" th:field="*{remarks}" th:disabled="${isUserRole}"></textarea>
             <span th:errors="*{remarks}" class="text-danger"></span>
         </div>
 
         <!-- ボタンエリア: 登録/更新ボタンと戻るボタンをフォーム内に移動 -->
         <div class="d-flex justify-content-end">
             <!-- 登録/更新ボタン: type="submit"に変更 -->
-            <button id="submitButton" type="submit" class="btn btn-primary mr-2" th:classappend="${!@checkUtils.isNotBlank(userForm.userId) ? 'register-btn' : 'update-btn'}">
+            <button id="submitButton" type="submit" class="btn btn-primary mr-2" th:classappend="${!@checkUtils.isNotBlank(userForm.userId) ? 'register-btn' : 'update-btn'}" th:disabled="${isUserRole}">
                 <i th:class="${!@checkUtils.isNotBlank(userForm.userId) ? 'fas fa-user-plus' : 'fas fa-user-edit'}"></i>
                 <span th:text="${!@checkUtils.isNotBlank(userForm.userId) ? ' 登録' : ' 更新'}"></span>
             </button>
