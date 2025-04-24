@@ -1,5 +1,9 @@
 package com.example.guru.form;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 /**
  * ログインフォームクラス。
  * ログイン画面で使用するフォームです。
@@ -10,10 +14,13 @@ package com.example.guru.form;
  */
 public class LoginForm {
     
-	/** ユーザーID */
+	@NotBlank(message = "ユーザーIDは必須です")
+    @Size(max = 10, message = "ユーザーIDは10文字以内で入力してください")
+    @Pattern(regexp = "[A-Za-z0-9]+", message = "ユーザーIDは半角英数字で入力してください")
     private String userId;
-    
-    /** パスワード */
+
+    @NotBlank(message = "パスワードは必須です")
+    @Size(max = 10, message = "パスワードは10文字以内で入力してください")
     private String password;
     
     /**

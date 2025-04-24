@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -44,33 +46,35 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/login")  		// ログインエンドポイントはCSRF保護を除外
-            )
+            .csrf(Customizer.withDefaults())  // ← これが正解！
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/login").permitAll()  	// ログインページは認証なしでアクセス可能
-                .requestMatchers("/css/**").permitAll()  	// CSSなどの静的リソースは認証不要
-                .anyRequest().authenticated()  				// その他のリクエストは認証必須
+                .requestMatchers("/login").permitAll()      // ログインページは認証なしでアクセス可能
+                .requestMatchers("/css/**").permitAll()     // CSSなどの静的リソースは認証不要
+                .anyRequest().authenticated()               // その他のリクエストは認証必須
             )
             .formLogin(form -> form
-                .loginPage("/login")  							 // ログインページのURLを指定
-                .usernameParameter("userId") 					 // ログイン時のユーザーIDパラメータ名
-                .passwordParameter("password")  				 // ログイン時のパスワードパラメータ名
-                .defaultSuccessUrl("/menu", true)  				 // ログイン成功時のデフォルト遷移先
+                .loginPage("/login")                        // ログインページのURLを指定
+                .loginProcessingUrl("/authenticate")        // Spring Securityが認証処理するURL
+                .usernameParameter("userId")                // ログイン時のユーザーIDパラメータ名
+                .passwordParameter("password")              // ログイン時のパスワードパラメータ名
+                .defaultSuccessUrl("/menu", true)           // ログイン成功時のデフォルト遷移先
                 .failureHandler(authenticationFailureHandler())  // 認証失敗時の処理ハンドラ
-                .permitAll()  									 // ログインページへのアクセスを許可
+                .permitAll()                                // ログインページへのアクセスを許可
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/login")  // ログアウト成功時のリダイレクト先
-                .permitAll()  				 // ログアウト処理を誰でも実行可能に
+                .logoutSuccessUrl("/login")                 // ログアウト成功時のリダイレクト先
+                .permitAll()                                // ログアウト処理を誰でも実行可能に
             )
             .sessionManagement(session -> session
-                .invalidSessionUrl("/login")  	// 無効なセッション時のリダイレクト先
-                .maximumSessions(1)  			// 同一ユーザーにつき最大1セッションを許可
-                .expiredUrl("/login")  			// セッション期限切れ時のリダイレクト先
+                .invalidSessionUrl("/login")                // 無効なセッション時のリダイレクト先
+                .maximumSessions(1)                         // 同一ユーザーにつき最大1セッションを許可
+                .expiredUrl("/login")                       // セッション期限切れ時のリダイレクト先
             )
-            .userDetailsService(userDetailsService());  // カスタムユーザー認証サービスを設定
-        return http.build();  							// 設定を適用したSecurityFilterChainを返す
+            .headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.sameOrigin())  // X-Frame-OptionsをSAMEORIGINに設定
+            )
+            .userDetailsService(userDetailsService());      // カスタムユーザー認証サービスを設定
+        return http.build();                                // 設定を適用したSecurityFilterChainを返す
     }
 
     /**
@@ -83,12 +87,9 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() throws Exception {
         return username -> {
-            if (username == null || username.trim().isEmpty()) {
-                throw new org.springframework.security.core.userdetails.UsernameNotFoundException("ユーザーIDを入力してください");
-            }
             com.example.guru.entity.MUser user = userService.findByUserId(username);
             if (user == null) {
-                throw new org.springframework.security.core.userdetails.UsernameNotFoundException("ユーザーIDまたはパスワードが正しくありません");
+            	throw new MyCustomLoginException("ユーザーIDが正しくありません。");
             }
             return org.springframework.security.core.userdetails.User
                 .withUsername(username)
@@ -107,15 +108,40 @@ public class SecurityConfig {
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler() {
         return (request, response, exception) -> {
+        	
             HttpSession session = request.getSession();
             LoginForm loginForm = new LoginForm();
             loginForm.setUserId(request.getParameter("userId"));  // 入力されたユーザーIDを保持
-            session.setAttribute("loginForm", loginForm);  // セッションにフォーム情報を保存
+            session.setAttribute("loginForm", loginForm);         // セッションにフォーム情報を保存
 
             // エラーメッセージと例外をセッションに保存
-            session.setAttribute("errorMessage", messageSource.getMessage("user.invalid", null, null, null));
+            String message;
+
+            if (exception.getCause() instanceof MyCustomLoginException) {
+                message = exception.getCause().getMessage(); // ← オリジナルメッセージが取れる！
+            } else if (exception instanceof BadCredentialsException) {
+            	 message = messageSource.getMessage("user.invalid", null, null, null);
+            } else {
+                message = messageSource.getMessage("user.invalid", null, null, null);
+            }
+            session.setAttribute("errorMessage", message);
 
             response.sendRedirect("/login?error");  // エラー付きでログインページへリダイレクト
         };
+    }
+    
+    /**
+     * ログイン処理中に発生するカスタム例外クラス。
+     * この例外は、ユーザーIDまたはパスワードの不備など、認証に関するビジネスロジック上のエラーを通知するために使用されます。
+     * Spring Security の認証処理中にスローすることで、独自のエラーメッセージをログイン画面に表示できます。
+     *
+     * @version 1.0
+     * @author kota
+     * @since 2025-03-19
+     */
+    public class MyCustomLoginException extends RuntimeException {
+        public MyCustomLoginException(String message) {
+            super(message);
+        }
     }
 }

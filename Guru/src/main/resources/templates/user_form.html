@@ -95,11 +95,25 @@
             <span th:errors="*{address2}" class="text-danger"></span>
         </div>
 
-        <!-- 備考 -->
+		<!-- 備考 -->
         <div class="form-group col-md-8">
             <label for="remarks" class="form-label">備考</label>
             <textarea class="form-control" autocomplete="off" id="remarks" th:field="*{remarks}" th:disabled="${isUserRole}"></textarea>
+            <div class="input-group-append">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
             <span th:errors="*{remarks}" class="text-danger"></span>
+        </div>
+
+		<!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <!-- Modal content will be loaded here -->
+                </div>
+            </div>
         </div>
 
         <!-- ボタンエリア: 登録/更新ボタンと戻るボタンをフォーム内に移動 -->
@@ -135,6 +149,38 @@
     <!-- jQueryスクリプト -->
     <script>
         $(document).ready(function() {
+			
+			// モーダルが表示されるタイミングで内容を読み込む
+            $('#exampleModalCenter').on('show.bs.modal', function (e) {
+                $.ajax({
+                    url: '/user/modal-content',
+                    method: 'GET',
+                    beforeSend: function(xhr) {
+                        var token = $('meta[name="_csrf"]').attr('content');
+                        var header = $('meta[name="_csrf_header"]').attr('content');
+                        if (token && header) {
+                            xhr.setRequestHeader(header, token);
+                        }
+                    },
+                    success: function (data) {
+                        $('.modal-content').html(data);
+                        // 保存ボタンのイベントリスナーを動的に追加
+                        $('#saveModalButton').on('click', function() {
+                            // test1とtest2の値を取得（モーダルの<input>から）
+                            var test1 = $('#modalTest1').val();
+                            var test2 = $('#modalTest2').val();
+                            // 備考テキストエリアに値を設定（上書き）
+                            $('#remarks').val(test1 + '\n' + test2);
+                            // モーダルを閉じる
+                            $('#exampleModalCenter').modal('hide');
+                        });
+                    },
+                    error: function () {
+                        $('.modal-content').html('<div class="modal-body">コンテンツの読み込みに失敗しました。</div>');
+                    }
+                });
+            });
+			
             // 郵便番号入力時にEnterキーで住所検索
             $('#postalCode').on('keydown', function(e) {
                 if (e.key === 'Enter') {

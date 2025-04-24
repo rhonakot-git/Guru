@@ -428,4 +428,17 @@ public class UserController extends BaseController {
         // 登録完了メッセージ付きでリダイレクト
         return "redirect:/user/update/" + userForm.getUserId() + "?message=" + encodedMessage;
     }
+    
+    /**
+     * モーダル内容を返します。
+     * 
+     * @param model ビューに渡すモデル
+     * @return モーダル内容のフラグメント
+     */
+    @GetMapping("/modal-content")
+    public String getModalContent(Model model) {
+        model.addAttribute("test1", "a");
+        model.addAttribute("test2", "b");
+        return "test :: modalContent";
+    }
 }
